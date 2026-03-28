@@ -6,239 +6,59 @@
     <title>El Despacho de Nueva Palmira - Monkey Island Style</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🎮</text></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: 'Courier New', monospace;
-            color: #fff;
-        }
-
-        .game-wrapper {
-            width: 100%;
-            max-width: 1200px;
-            padding: 10px;
-        }
-
-        .game-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 4/3;
-            background: #1a1a1a;
-            border: 4px solid #4a4a4a;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: #1a1a1a;
-            cursor: pointer;
-        }
-
-        .ui-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            border-top: 2px solid #4a4a4a;
-            padding: 15px;
-            max-height: 30%;
-            overflow-y: auto;
-            font-size: 11px;
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
-            z-index: 10;
-        }
-
-        .dialog-text {
-            margin-bottom: 10px;
-            line-height: 1.5;
-            min-height: 30px;
-        }
-
-        .dialog-options {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .dialog-option {
-            background: #2a2a2a;
-            border: 1px solid #00ff00;
-            padding: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #00ff00;
-            font-size: 10px;
-        }
-
-        .dialog-option:hover {
-            background: #00ff00;
-            color: #000;
-            text-shadow: none;
-        }
-
-        .inventory-bar {
-            position: absolute;
-            bottom: 5px;
-            left: 10px;
-            display: flex;
-            gap: 8px;
-            z-index: 15;
-        }
-
-        .inventory-item {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #4a4a4a;
-            background: #2a2a2a;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .inventory-item.active {
-            border-color: #00ff00;
-            box-shadow: 0 0 10px #00ff00;
-            background: #1a3a1a;
-        }
-
-        .status-bar {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff00;
-            padding: 8px;
-            font-size: 10px;
-            z-index: 5;
-        }
-
-        .status-text {
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
-            margin: 2px 0;
-        }
-
-        .sound-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            padding: 6px 10px;
-            cursor: pointer;
-            font-size: 10px;
-            z-index: 5;
-        }
-
-        .sound-toggle:hover {
-            background: #00ff00;
-            color: #000;
-        }
-
-        .victory-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
-        }
-
-        .victory-overlay.show {
-            display: flex;
-        }
-
-        .victory-title {
-            font-size: 40px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #ffff00;
-            text-shadow: 0 0 20px #ff0000;
-            animation: pulse 0.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .victory-text {
-            font-size: 14px;
-            margin: 8px 0;
-        }
-
-        .victory-stats {
-            margin-top: 20px;
-            background: rgba(0, 255, 0, 0.1);
-            border: 2px solid #00ff00;
-            padding: 15px;
-            text-align: left;
-            font-size: 12px;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Courier New', monospace; color: #ecf0f1; }
+        .wrapper { width: 100%; max-width: 1200px; padding: 10px; }
+        .container { position: relative; width: 100%; aspect-ratio: 4/3; background: #0a1a2e; border: 3px solid #16a085; overflow: hidden; box-shadow: 0 0 50px rgba(22, 160, 133, 0.3); }
+        canvas { display: block; width: 100%; height: 100%; background: #0a1a2e; cursor: pointer; }
+        .ui-layer { position: absolute; bottom: 0; left: 0; right: 0; max-height: 30%; background: rgba(10, 26, 46, 0.95); border-top: 2px solid #16a085; padding: 12px; overflow-y: auto; font-size: 11px; color: #16a085; z-index: 10; }
+        .dialog-text { margin-bottom: 10px; line-height: 1.6; min-height: 35px; text-shadow: 0 0 5px #16a085; }
+        .dialog-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .dialog-option { background: #1a3a3a; border: 1px solid #16a085; padding: 6px 10px; cursor: pointer; transition: 0.2s; color: #16a085; font-size: 10px; }
+        .dialog-option:hover { background: #16a085; color: #0a1a2e; text-shadow: none; }
+        .status-bar { position: absolute; top: 10px; left: 10px; background: rgba(10, 26, 46, 0.9); border: 2px solid #16a085; padding: 8px; font-size: 10px; z-index: 5; min-width: 150px; }
+        .status-text { color: #16a085; margin: 3px 0; text-shadow: 0 0 3px #16a085; }
+        .inventory-bar { position: absolute; bottom: 8px; right: 10px; display: flex; gap: 8px; z-index: 15; }
+        .inventory-slot { width: 45px; height: 45px; border: 2px solid #34495e; background: #1a3a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: 0.3s; cursor: pointer; }
+        .inventory-slot.active { border-color: #16a085; box-shadow: 0 0 8px #16a085; background: #0a2a2a; }
+        .sound-toggle { position: absolute; top: 10px; right: 10px; background: rgba(10, 26, 46, 0.9); border: 2px solid #16a085; color: #16a085; padding: 6px 10px; cursor: pointer; font-size: 10px; z-index: 5; transition: 0.2s; }
+        .sound-toggle:hover { background: #16a085; color: #0a1a2e; }
+        .victory-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 26, 46, 0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
+        .victory-screen.show { display: flex; }
+        .victory-title { font-size: 48px; font-weight: bold; color: #f39c12; text-shadow: 0 0 20px #e74c3c; margin-bottom: 20px; animation: pulse 0.6s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .victory-text { font-size: 16px; color: #16a085; margin: 8px 0; }
+        .victory-stats { margin-top: 20px; background: rgba(22, 160, 133, 0.1); border: 2px solid #16a085; padding: 15px; text-align: left; font-size: 12px; color: #16a085; }
         @media (max-width: 768px) {
-            .dialog-text { font-size: 9px; }
-            .dialog-option { font-size: 8px; }
-            .status-bar { font-size: 8px; }
-            .sound-toggle { font-size: 8px; }
-            .inventory-item { width: 40px; height: 40px; font-size: 14px; }
+            .ui-layer { font-size: 9px; } .dialog-option { font-size: 8px; padding: 4px 8px; } .status-bar { font-size: 8px; }
+            .inventory-slot { width: 35px; height: 35px; font-size: 16px; } .sound-toggle { font-size: 8px; }
         }
     </style>
 </head>
 <body>
-    <div class="game-wrapper">
-        <div class="game-container">
+    <div class="wrapper">
+        <div class="container" id="gameContainer">
             <canvas id="gameCanvas"></canvas>
-            
             <div class="status-bar">
-                <div class="status-text">LOC: <span id="locStatus">INTRO</span></div>
+                <div class="status-text">LOC: <span id="locStatus">MENU</span></div>
                 <div class="status-text">CRISTHIAN Q</div>
+                <div class="status-text">TIME: <span id="timeStatus">00:00</span></div>
             </div>
-
             <div class="sound-toggle" id="soundToggle">🔊 ON</div>
-
             <div class="inventory-bar" id="inventoryBar">
-                <div class="inventory-item" id="inv-0">📄</div>
-                <div class="inventory-item" id="inv-1">🖋️</div>
-                <div class="inventory-item" id="inv-2">📋</div>
-                <div class="inventory-item" id="inv-3">🔏</div>
+                <div class="inventory-slot" id="inv-0" title="Documento Migraciones">📄</div>
+                <div class="inventory-slot" id="inv-1" title="Autorización Prefectura">🖋️</div>
+                <div class="inventory-slot" id="inv-2" title="Despacho Impreso">📋</div>
+                <div class="inventory-slot" id="inv-3" title="Sello Aduana">🔏</div>
             </div>
-
-            <div class="ui-bottom">
+            <div class="ui-layer">
                 <div class="dialog-text" id="dialogText">Cargando juego...</div>
                 <div class="dialog-options" id="dialogOptions"></div>
             </div>
-
-            <div class="victory-overlay" id="victoryOverlay">
+            <div class="victory-screen" id="victoryScreen">
                 <div class="victory-title">¡¡VICTORIA!!</div>
-                <div class="victory-text">El buque despachado correctamente</div>
+                <div class="victory-text">El Despacho completado</div>
+                <div class="victory-text">La lancha parte hacia el buque...</div>
                 <div class="victory-stats" id="victoryStats"></div>
                 <div class="victory-text" style="margin-top: 20px;">Presiona R para reiniciar</div>
             </div>
@@ -246,75 +66,106 @@
     </div>
 
     <script>
+        'use strict';
+
         // ============================================================
-        // AUDIO SYSTEM (Safe, Non-Blocking)
+        // CONSTANTS & CONFIG
         // ============================================================
-        let audioCtx = null;
-        let soundEnabled = true;
-        let audioReady = false;
-
-        function initAudio() {
-            if (!audioCtx && !audioReady) {
-                try {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    audioReady = true;
-                } catch (e) {
-                    audioReady = true; // Mark as tried, don't retry
-                }
-            }
-        }
-
-        function playSound(freq, dur, type = 'sine', vol = 0.2) {
-            if (!soundEnabled || !audioCtx) return;
-            try {
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.type = type;
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(vol, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + dur);
-                osc.start(now);
-                osc.stop(now + dur);
-            } catch (e) { }
-        }
-
-        const sounds = {
-            select: () => playSound(800, 0.08),
-            getItem: () => {
-                playSound(523, 0.1);
-                setTimeout(() => playSound(659, 0.1), 100);
-                setTimeout(() => playSound(784, 0.12), 200);
-            },
-            slap: () => {
-                playSound(150, 0.05, 'square', 0.4);
-                playSound(100, 0.08, 'square', 0.3);
-            },
-            door: () => {
-                playSound(400, 0.15);
-                playSound(350, 0.15);
-            },
-            victory: () => {
-                playSound(523, 0.1);
-                setTimeout(() => playSound(659, 0.1), 100);
-                setTimeout(() => playSound(784, 0.1), 200);
-                setTimeout(() => playSound(1047, 0.2), 300);
-            }
+        const SCREEN_WIDTH = 800;
+        const SCREEN_HEIGHT = 600;
+        const TILESIZE = 40;
+        const FPS = 60;
+        const COLORS = {
+            bg: '#0a1a2e', primary: '#16a085', secondary: '#f39c12',
+            text: '#ecf0f1', shadow: '#1a1a1a', accent: '#e74c3c', ui: '#34495e'
         };
 
-        document.getElementById('soundToggle').addEventListener('click', () => {
-            soundEnabled = !soundEnabled;
-            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 ON' : '🔇 OFF';
-            initAudio();
-        });
+        // ============================================================
+        // AUDIO MANAGER
+        // ============================================================
+        class AudioManager {
+            constructor() {
+                this.ctx = null; this.enabled = true; this.ready = false;
+            }
+            init() {
+                if (!this.ctx && !this.ready) {
+                    try {
+                        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        this.ready = true;
+                    } catch (e) { this.ready = true; }
+                }
+            }
+            play(freq, dur, type = 'sine', vol = 0.2) {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.type = type; osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(vol, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+                    osc.start(now); osc.stop(now + dur);
+                } catch (e) {}
+            }
+            door() { this.play(400, 0.15); setTimeout(() => this.play(350, 0.15), 150); }
+            item() { this.play(523, 0.1); setTimeout(() => this.play(659, 0.1), 100); setTimeout(() => this.play(784, 0.12), 200); }
+            slap() { this.play(150, 0.05, 'square', 0.4); this.play(100, 0.08, 'square', 0.3); }
+            victory() { this.play(523, 0.1); setTimeout(() => this.play(659, 0.1), 100); setTimeout(() => this.play(784, 0.1), 200); setTimeout(() => this.play(1047, 0.2), 300); }
+        }
+        const audio = new AudioManager();
 
         // ============================================================
-        // CANVAS SETUP
+        // GAME STATE
+        // ============================================================
+        class GameState {
+            constructor() {
+                this.location = 'menu';
+                this.inventory = [false, false, false, false];
+                this.npcVisited = [false, false, false, false, false, false];
+                this.cachetazos = 0;
+                this.dialogos = 0;
+                this.miniJuegos = 0;
+                this.startTime = Date.now();
+                this.gameWon = false;
+                this.currentDialogBranch = 0;
+            }
+            save() { localStorage.setItem('despacho_save', JSON.stringify(this)); }
+            load() {
+                const saved = localStorage.getItem('despacho_save');
+                if (saved) Object.assign(this, JSON.parse(saved));
+            }
+        }
+        const gameState = new GameState();
+
+        // ============================================================
+        // DIALOGS DATABASE
+        // ============================================================
+        const dialogDB = {
+            menu_title: { text: "EL DESPACHO DE NUEVA PALMIRA\n\n> Haz CLICK para comenzar", options: [] },
+            intro1: { text: "🔊 PRÁCTICO: Atencion Control Palmira...\nAqui Práctico Chiarelli.\nEn 5 minutos fondeamos en Rada Nueva Palmira.\n\n[Pausa de tensión...]", options: [] },
+            intro2: { text: "CRISTHIAN (monólogo): El Capitán confía en mí...\nSolo necesito: Migraciones → Prefectura → Oficina → Aduana.\n\n¿Qué tan difícil puede ser?", options: [{ text: "> Comenzar", next: 'mapa' }] },
+            mapa: { text: "Puerto Nueva Palmira. Veo 6 locaciones. ¿Dónde primero?", options: [] },
+            migr_start: { text: "OFICIAL GÓMEZ (amable): ¡Bienvenido a Migraciones! ¿Necesitas el documento?", options: [{ text: "> Sí", next: 'migr_doc' }] },
+            migr_doc: { text: "GÓMEZ: Aqui está. Sin esto no entras a ningún lado.\n⚠️ Mi compañera Malhumorada te dará un CACHETAZO si la ves sin esto.", options: [{ text: "> Gracias", next: 'mapa', action: 0 }] },
+            pref_nodoc: { text: "❌ ¡¡OFICIAL MALHUMORADA!!\n[PLAAACK!!!]\n¡¡SIN DOCUMENTO NO ENTRA NADIE!!", options: [] },
+            pref_withdoc: { text: "CAPITÁN LÓPEZ: Documento en orden... Aqui va la autorización.", options: [{ text: "> Gracias", next: 'mapa', action: 1 }] },
+            ofic_noauth: { text: "❌ ¡¡OFICIAL MALHUMORADA (FURIOSA)!!\n[PLAAACK x2!!!]\n¡¡PRIMERO AUTORIZACIÓN!!", options: [] },
+            ofic_minigame: { text: "EMPLEADA MARTINA: ¿Qué imprimimos?", options: [{ text: "1. Despacho oficial", next: 'ofic_win', action: 2 }, { text: "2. Carta de amor", next: 'ofic_lose' }, { text: "3. Receta", next: 'ofic_lose' }] },
+            ofic_lose: { text: "MARTINA: ¡¡ESO NO SE IMPRIME!!", options: [{ text: "1. Despacho oficial", next: 'ofic_win', action: 2 }, { text: "2. Carta de amor", next: 'ofic_lose' }, { text: "3. Receta", next: 'ofic_lose' }] },
+            ofic_win: { text: "MARTINA: ¡¡CORRECTO!! Tu despacho.", options: [{ text: "> Gracias", next: 'mapa', action: 2 }] },
+            adu_start: { text: "INSPECTOR RODRÍGUEZ: Ese despacho... ¿es AUTÉNTICO?", options: [{ text: "> ¡Es legítimo!", next: 'adu_seal', action: 3 }] },
+            adu_seal: { text: "RODRÍGUEZ: El sello... ES PODER.\n✅ ¡¡VICTORIA!! Buque despachado.", options: [] },
+            puerto: { text: "MARINERO: Este buque pesa 50 mil toneladas. Una BESTIA.", options: [{ text: "> Gracias", next: 'mapa' }] },
+            terminal: { text: "SUPERVISOR: ¿Cuántas toneladas pesa el buque?", options: [{ text: "1. 50.000 ton", next: 'mapa' }, { text: "2. 3.000 ton", next: 'mapa' }, { text: "3. 100 ton", next: 'mapa' }] }
+        };
+
+        // ============================================================
+        // CANVAS & RENDERING
         // ============================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        let lastTime = 0;
 
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -324,496 +175,243 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // ============================================================
-        // GAME STATE
-        // ============================================================
-        const gameState = {
-            location: 'intro',
-            introPhase: 0,
-            items: [false, false, false, false],
-            npcVisited: [false, false, false, false, false, false],
-            cachetazos: 0,
-            dialogos: 0,
-            miniJuegos: 0,
-            startTime: Date.now(),
-            gameWon: false
-        };
+        function drawIsometricTile(x, y, z, color) {
+            const sx = (x - y) * (TILESIZE / 2) + canvas.width / 2;
+            const sy = (x + y) * (TILESIZE / 4) - z * (TILESIZE / 2) + canvas.height / 3;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy); ctx.lineTo(sx + TILESIZE / 2, sy + TILESIZE / 4);
+            ctx.lineTo(sx, sy + TILESIZE / 2); ctx.lineTo(sx - TILESIZE / 2, sy + TILESIZE / 4); ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#16a085'; ctx.lineWidth = 1; ctx.stroke();
+        }
+
+        function drawMenu() {
+            ctx.fillStyle = COLORS.bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = COLORS.secondary;
+            ctx.font = 'bold 40px Courier';
+            ctx.textAlign = 'center';
+            ctx.fillText('EL DESPACHO', canvas.width / 2, canvas.height / 3);
+            ctx.fillText('DE NUEVA PALMIRA', canvas.width / 2, canvas.height / 3 + 50);
+            ctx.fillStyle = COLORS.primary;
+            ctx.font = '16px Courier';
+            ctx.fillText('[HACED CLICK PARA COMENZAR]', canvas.width / 2, canvas.height * 0.7);
+        }
+
+        function drawIntro() {
+            ctx.fillStyle = '#1a3a5a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Puente del buque
+            ctx.fillStyle = '#87ceeb';
+            ctx.fillRect(canvas.width * 0.1, 30, 100, 60);
+            ctx.fillRect(canvas.width * 0.3, 30, 100, 60);
+            ctx.fillRect(canvas.width * 0.5, 30, 100, 60);
+            ctx.fillRect(canvas.width * 0.7, 30, 100, 60);
+            // Panel
+            ctx.fillStyle = '#4a4a4a';
+            ctx.fillRect(canvas.width * 0.1, canvas.height * 0.35, canvas.width * 0.8, canvas.height * 0.35);
+            // Luces
+            ctx.fillStyle = '#ff0000'; ctx.beginPath(); ctx.arc(canvas.width * 0.18, canvas.height * 0.45, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#00ff00'; ctx.beginPath(); ctx.arc(canvas.width * 0.3, canvas.height * 0.45, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ffff00'; ctx.beginPath(); ctx.arc(canvas.width * 0.42, canvas.height * 0.45, 8, 0, Math.PI * 2); ctx.fill();
+            // Práctico GRANDE
+            const px = canvas.width * 0.5, py = canvas.height * 0.5;
+            ctx.fillStyle = '#ffdbac'; ctx.beginPath(); ctx.arc(px, py - 35, 25, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(px, py - 55, 27, 0, Math.PI); ctx.fill();
+            ctx.fillStyle = '#000'; ctx.fillRect(px - 12, py - 35, 5, 5); ctx.fillRect(px + 7, py - 35, 5, 5);
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py - 20, 8, 0, Math.PI); ctx.stroke();
+            ctx.fillStyle = '#1a1a5a'; ctx.fillRect(px - 22, py - 10, 44, 35);
+        }
+
+        function drawMap() {
+            ctx.fillStyle = '#8B7355'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#4a7fa7'; ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+            const doors = [
+                { x: 0.15, y: 0.35, label: 'MIGR', loc: 'migraciones' },
+                { x: 0.4, y: 0.35, label: 'PREF', loc: 'prefectura' },
+                { x: 0.65, y: 0.35, label: 'OFIC', loc: 'oficina' },
+                { x: 0.5, y: 0.55, label: 'ADU', loc: 'aduana' },
+                { x: 0.1, y: 0.15, label: 'PUERTO', loc: 'puerto' },
+                { x: 0.8, y: 0.2, label: 'TERM', loc: 'terminal' }
+            ];
+            doors.forEach(d => {
+                const dx = canvas.width * d.x, dy = canvas.height * d.y;
+                ctx.fillStyle = '#8B4513'; ctx.fillRect(dx - 25, dy - 40, 50, 80);
+                ctx.strokeStyle = '#654321'; ctx.lineWidth = 2; ctx.strokeRect(dx - 25, dy - 40, 50, 80);
+                ctx.fillStyle = '#ffff00'; ctx.font = '11px Courier'; ctx.textAlign = 'center'; ctx.fillText(d.label, dx, dy);
+            });
+            // Personaje
+            const cx = canvas.width * 0.5, cy = canvas.height * 0.7;
+            ctx.fillStyle = '#ffdbac'; ctx.beginPath(); ctx.arc(cx, cy - 25, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#1a3a7a'; ctx.fillRect(cx - 10, cy - 15, 20, 20);
+            ctx.fillRect(cx - 12, cy - 10, 4, 12); ctx.fillRect(cx + 8, cy - 10, 4, 12);
+            ctx.fillRect(cx - 4, cy + 5, 3, 10); ctx.fillRect(cx + 1, cy + 5, 3, 10);
+        }
+
+        function drawLocation(name, npcName) {
+            const colors = { 'migraciones': '#5a5a5a', 'prefectura': '#4a4a6a', 'oficina': '#6a6a4a', 'aduana': '#3a3a5a', 'puerto': '#4a7fa7', 'terminal': '#6a4a3a' };
+            ctx.fillStyle = colors[name] || '#5a5a5a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffff00'; ctx.font = 'bold 18px Courier'; ctx.textAlign = 'center'; ctx.fillText(name.toUpperCase(), canvas.width / 2, 40);
+            ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
+            // Cristhian
+            const cx = canvas.width * 0.25, cy = canvas.height * 0.55;
+            ctx.fillStyle = '#ffdbac'; ctx.beginPath(); ctx.arc(cx, cy - 20, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#1a3a7a'; ctx.fillRect(cx - 8, cy - 12, 16, 16);
+            // NPC
+            const nx = canvas.width * 0.75, ny = canvas.height * 0.55;
+            ctx.fillStyle = '#ffdbac'; ctx.beginPath(); ctx.arc(nx, ny - 20, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#4a7fa7'; ctx.fillRect(nx - 8, ny - 12, 16, 16);
+            ctx.fillStyle = '#ffff00'; ctx.font = '10px Courier'; ctx.textAlign = 'center'; ctx.fillText(npcName, nx, ny + 20);
+        }
+
+        function render() {
+            if (gameState.location === 'menu') drawMenu();
+            else if (gameState.location === 'intro') drawIntro();
+            else if (gameState.location === 'mapa') drawMap();
+            else if (gameState.location === 'migraciones') drawLocation('migraciones', 'GÓMEZ');
+            else if (gameState.location === 'prefectura') drawLocation('prefectura', 'LÓPEZ');
+            else if (gameState.location === 'oficina') drawLocation('oficina', 'MARTINA');
+            else if (gameState.location === 'aduana') drawLocation('aduana', 'RODRÍGUEZ');
+            else if (gameState.location === 'puerto') drawLocation('puerto', 'MARINERO');
+            else if (gameState.location === 'terminal') drawLocation('terminal', 'SUPERVISOR');
+        }
 
         // ============================================================
-        // DIALOGS DATABASE
-        // ============================================================
-        const dialogs = {
-            intro: {
-                text: "🔊 PRÁCTICO: Atención Control Palmira...\n\nAqui Práctico Chiarelli. En 5 minutos fondeamos en Rada Nueva Palmira.\n\n[Haz CLICK para continuar...]",
-                options: []
-            },
-            intro2: {
-                text: "🔊 PRÁCTICO: Autorización para operaciones de descarga mineral en Terminal Navios...\n\n[Pausa de tensión...]",
-                options: []
-            },
-            monologue: {
-                text: "CRISTHIAN (monólogo): El Capitán confía en mí... Solo necesito que Migraciones firme, luego Prefectura, imprimir en Oficina, y finalmente Aduana.\n\n¿Qué tan difícil puede ser?",
-                options: [{ text: "> Comenzar", next: 'mapa' }]
-            },
-            mapa: {
-                text: "Estoy en el muelle de Nueva Palmira. Veo 6 locaciones. ¿Dónde voy?",
-                options: []
-            },
-            migr_init: {
-                text: "OFICIAL GÓMEZ: ¡Bienvenido a Migraciones! Necesitás el documento de entrada?",
-                options: [{ text: "> Sí, por favor", next: 'migr_doc' }]
-            },
-            migr_doc: {
-                text: "GÓMEZ: Aquí está. Sin esto no entras a ningún lado.\n\n⚠️ ADVERTENCIA: Mi compañera te dará un cachetazo si la ves sin esto.",
-                options: [{ text: "> Gracias", next: 'mapa', action: 0 }]
-            },
-            pref_nodoc: {
-                text: "❌ ¡¡OFICIAL MALHUMORADA!!\n[PLAAACK!!!]\n\n¡¡SIN DOCUMENTO DE MIGRACIONES NO ENTRA NADIE!",
-                options: []
-            },
-            pref_doc: {
-                text: "CAPITÁN LÓPEZ: El documento está en orden... Aquí va la autorización.",
-                options: [{ text: "> Gracias", next: 'mapa', action: 1 }]
-            },
-            ofic_noauth: {
-                text: "❌ ¡¡OFICIAL MALHUMORADA (FURIOSA)!!\n[PLAAACK x2!!!]\n\n¡¡PRIMERO AUTORIZACIÓN, DESPUÉS IMPRIMO!",
-                options: []
-            },
-            ofic_minigame: {
-                text: "EMPLEADA MARTINA: ¿Qué imprimimos?",
-                options: [
-                    { text: "1. Despacho oficial", next: 'ofic_win', action: 2 },
-                    { text: "2. Carta de amor", next: 'ofic_lose' },
-                    { text: "3. Receta de bizcochos", next: 'ofic_lose' }
-                ]
-            },
-            ofic_lose: {
-                text: "MARTINA: ¡¡Eso NO se imprime!!",
-                options: [
-                    { text: "1. Despacho oficial", next: 'ofic_win', action: 2 },
-                    { text: "2. Carta de amor", next: 'ofic_lose' },
-                    { text: "3. Receta de bizcochos", next: 'ofic_lose' }
-                ]
-            },
-            ofic_win: {
-                text: "MARTINA: ¡¡CORRECTO!! Aquí está tu despacho.",
-                options: [{ text: "> Gracias", next: 'mapa', action: 2 }]
-            },
-            adu_init: {
-                text: "INSPECTOR RODRÍGUEZ: Ese despacho... ¿es AUTÉNTICO? Huele a fraude...",
-                options: [{ text: "> ¡Es legítimo!", next: 'adu_seal', action: 3 }]
-            },
-            adu_seal: {
-                text: "RODRÍGUEZ: El sello... ES PODER.\n\n✅ ¡¡VICTORIA!! El buque ha sido despachado.",
-                options: []
-            },
-            puerto_anp: {
-                text: "MARINERO: ¿Qué mirás? Este buque pesa 50 mil toneladas. Una BESTIA.",
-                options: [{ text: "> Interesante", next: 'mapa' }]
-            },
-            terminal: {
-                text: "SUPERVISOR: ¿Cuántas toneladas pesa el buque?",
-                options: [
-                    { text: "1. 50.000 toneladas", next: 'mapa' },
-                    { text: "2. 3.000 toneladas", next: 'mapa' },
-                    { text: "3. 100 toneladas", next: 'mapa' }
-                ]
-            }
-        };
-
-        // ============================================================
-        // GAME FUNCTIONS
+        // GAME LOGIC
         // ============================================================
         function updateInventory() {
-            const items = document.querySelectorAll('.inventory-item');
-            items.forEach((el, i) => {
-                if (gameState.items[i]) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
+            ['inv-0', 'inv-1', 'inv-2', 'inv-3'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                gameState.inventory[i] ? el.classList.add('active') : el.classList.remove('active');
             });
         }
 
         function showDialog(key) {
-            const d = dialogs[key];
+            const d = dialogDB[key];
             if (!d) return;
-
             document.getElementById('dialogText').textContent = d.text;
-            const opts = document.getElementById('dialogOptions');
-            opts.innerHTML = '';
-
+            const optsEl = document.getElementById('dialogOptions');
+            optsEl.innerHTML = '';
             if (d.options.length) {
                 d.options.forEach(opt => {
                     const btn = document.createElement('div');
                     btn.className = 'dialog-option';
                     btn.textContent = opt.text;
                     btn.onclick = () => {
-                        sounds.select();
+                        audio.play(800, 0.08);
                         if (opt.action !== undefined) {
-                            gameState.items[opt.action] = true;
+                            gameState.inventory[opt.action] = true;
                             gameState.dialogos++;
-                            sounds.getItem();
+                            audio.item();
                         }
-                        if (opt.next) {
-                            if (opt.next === 'mapa') {
-                                goToLocation('mapa');
-                            } else {
-                                showDialog(opt.next);
-                            }
-                        }
+                        if (opt.next) goToLocation(opt.next);
                     };
-                    opts.appendChild(btn);
+                    optsEl.appendChild(btn);
                 });
             } else {
                 setTimeout(() => {
-                    if (key === 'intro') {
-                        gameState.introPhase = 1;
-                        showDialog('intro2');
-                    } else if (key === 'intro2') {
-                        gameState.introPhase = 2;
-                        showDialog('monologue');
-                    } else if (key === 'pref_nodoc') {
-                        gameState.cachetazos++;
-                        setTimeout(() => goToLocation('mapa'), 2000);
-                    } else if (key === 'ofic_noauth') {
-                        gameState.cachetazos++;
-                        setTimeout(() => goToLocation('mapa'), 2000);
-                    } else if (key === 'adu_seal') {
-                        gameState.gameWon = true;
-                        showVictory();
-                    }
+                    if (key === 'intro1') showDialog('intro2');
+                    else if (key === 'pref_nodoc') { gameState.cachetazos++; audio.slap(); setTimeout(() => goToLocation('mapa'), 2000); }
+                    else if (key === 'ofic_noauth') { gameState.cachetazos++; audio.slap(); setTimeout(() => goToLocation('mapa'), 2000); }
+                    else if (key === 'adu_seal') { gameState.gameWon = true; showVictory(); }
                 }, 2000);
             }
-
             updateInventory();
         }
 
         function goToLocation(loc) {
             gameState.location = loc;
             document.getElementById('locStatus').textContent = loc.toUpperCase();
-            sounds.door();
-
-            if (loc === 'intro') {
-                showDialog('intro');
-            } else if (loc === 'mapa') {
-                showDialog('mapa');
-            } else if (loc === 'migraciones') {
-                if (!gameState.npcVisited[0]) {
-                    gameState.npcVisited[0] = true;
-                    showDialog('migr_init');
-                } else {
-                    showDialog('mapa');
-                }
-            } else if (loc === 'prefectura') {
-                if (!gameState.items[0]) {
-                    gameState.cachetazos++;
-                    showDialog('pref_nodoc');
-                } else if (!gameState.npcVisited[1]) {
-                    gameState.npcVisited[1] = true;
-                    showDialog('pref_doc');
-                } else {
-                    showDialog('mapa');
-                }
-            } else if (loc === 'oficina') {
-                if (!gameState.items[1]) {
-                    gameState.cachetazos++;
-                    showDialog('ofic_noauth');
-                } else if (!gameState.npcVisited[2]) {
-                    gameState.npcVisited[2] = true;
-                    showDialog('ofic_minigame');
-                } else {
-                    showDialog('mapa');
-                }
-            } else if (loc === 'aduana') {
-                if (!gameState.items[2]) {
-                    showDialog('mapa');
-                } else if (!gameState.npcVisited[3]) {
-                    gameState.npcVisited[3] = true;
-                    showDialog('adu_init');
-                } else {
-                    showDialog('mapa');
-                }
-            } else if (loc === 'puerto_anp') {
-                gameState.npcVisited[4] = true;
-                showDialog('puerto_anp');
-            } else if (loc === 'terminal_navios') {
-                gameState.npcVisited[5] = true;
-                gameState.miniJuegos++;
-                showDialog('terminal');
+            audio.door();
+            if (loc === 'menu') showDialog('menu_title');
+            else if (loc === 'intro') showDialog('intro1');
+            else if (loc === 'mapa') showDialog('mapa');
+            else if (loc === 'migraciones') showDialog(gameState.npcVisited[0] ? 'mapa' : 'migr_start'), gameState.npcVisited[0] = true;
+            else if (loc === 'prefectura') {
+                if (!gameState.inventory[0]) { gameState.cachetazos++; showDialog('pref_nodoc'); }
+                else { showDialog(gameState.npcVisited[1] ? 'mapa' : 'pref_withdoc'); gameState.npcVisited[1] = true; }
             }
+            else if (loc === 'oficina') {
+                if (!gameState.inventory[1]) { gameState.cachetazos++; showDialog('ofic_noauth'); }
+                else { showDialog(gameState.npcVisited[2] ? 'mapa' : 'ofic_minigame'); gameState.npcVisited[2] = true; }
+            }
+            else if (loc === 'aduana') {
+                if (!gameState.inventory[2]) showDialog('mapa');
+                else { showDialog(gameState.npcVisited[3] ? 'mapa' : 'adu_start'); gameState.npcVisited[3] = true; }
+            }
+            else if (loc === 'puerto') { showDialog('puerto'); gameState.npcVisited[4] = true; }
+            else if (loc === 'terminal') { showDialog('terminal'); gameState.npcVisited[5] = true; gameState.miniJuegos++; }
         }
 
         function showVictory() {
-            const time = Math.floor((Date.now() - gameState.startTime) / 1000);
-            const mins = Math.floor(time / 60);
-            const secs = time % 60;
-
+            const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+            const mins = Math.floor(elapsed / 60), secs = elapsed % 60;
             document.getElementById('victoryStats').innerHTML = `
-                <div class="status-text">Cachetazos: ${gameState.cachetazos}</div>
-                <div class="status-text">Diálogos: ${gameState.dialogos}</div>
-                <div class="status-text">Mini-juegos: ${gameState.miniJuegos}</div>
-                <div class="status-text">Tiempo: ${mins}m ${secs}s</div>
+                <div>Cachetazos: ${gameState.cachetazos}</div>
+                <div>Diálogos: ${gameState.dialogos}</div>
+                <div>Mini-juegos: ${gameState.miniJuegos}</div>
+                <div>Tiempo: ${mins}m ${secs}s</div>
             `;
-
-            document.getElementById('victoryOverlay').classList.add('show');
-            sounds.victory();
+            document.getElementById('victoryScreen').classList.add('show');
+            audio.victory();
         }
 
         // ============================================================
-        // CANVAS DRAWING
-        // ============================================================
-        function drawIntro() {
-            ctx.fillStyle = '#1a3a5a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Puente del buque (ventanas)
-            ctx.fillStyle = '#87ceeb';
-            ctx.fillRect(canvas.width * 0.1, 20, 60, 50);
-            ctx.fillRect(canvas.width * 0.3, 20, 60, 50);
-            ctx.fillRect(canvas.width * 0.5, 20, 60, 50);
-            ctx.fillRect(canvas.width * 0.7, 20, 60, 50);
-
-            // Panel de control
-            ctx.fillStyle = '#4a4a4a';
-            ctx.fillRect(canvas.width * 0.15, canvas.height * 0.35, canvas.width * 0.7, canvas.height * 0.35);
-
-            // Luces
-            ctx.fillStyle = '#ff0000';
-            ctx.beginPath();
-            ctx.arc(canvas.width * 0.2, canvas.height * 0.45, 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = '#00ff00';
-            ctx.beginPath();
-            ctx.arc(canvas.width * 0.3, canvas.height * 0.45, 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = '#ffff00';
-            ctx.beginPath();
-            ctx.arc(canvas.width * 0.4, canvas.height * 0.45, 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Práctico (cabeza GRANDE)
-            const practicoX = canvas.width * 0.5;
-            const practicoY = canvas.height * 0.55;
-
-            // Cabeza
-            ctx.fillStyle = '#ffdbac';
-            ctx.beginPath();
-            ctx.arc(practicoX, practicoY - 30, 20, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Gorro/pelo
-            ctx.fillStyle = '#333333';
-            ctx.beginPath();
-            ctx.arc(practicoX, practicoY - 45, 22, 0, Math.PI);
-            ctx.fill();
-
-            // Ojos
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(practicoX - 12, practicoY - 30, 4, 4);
-            ctx.fillRect(practicoX + 8, practicoY - 30, 4, 4);
-
-            // Boca (abierta - animada)
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(practicoX, practicoY - 18, 7, 0, Math.PI);
-            ctx.stroke();
-
-            // Micrófono
-            ctx.fillStyle = '#cccccc';
-            ctx.fillRect(practicoX + 30, practicoY - 30, 15, 40);
-            ctx.fillStyle = '#000000';
-            ctx.beginPath();
-            ctx.arc(practicoX + 37, practicoY - 35, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Uniforme
-            ctx.fillStyle = '#1a1a5a';
-            ctx.fillRect(practicoX - 20, practicoY - 10, 40, 30);
-        }
-
-        function drawMap() {
-            ctx.fillStyle = '#8B7355';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#4a7fa7';
-            ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
-
-            // Faro
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(canvas.width * 0.85, 30, 20, 100);
-            ctx.fillStyle = '#ffff00';
-            ctx.beginPath();
-            ctx.arc(canvas.width * 0.95, 20, 10, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Puertas (6)
-            const doors = [
-                { x: 0.15, y: 0.35, name: 'MIGR', loc: 'migraciones' },
-                { x: 0.4, y: 0.35, name: 'PREF', loc: 'prefectura' },
-                { x: 0.65, y: 0.35, name: 'OFIC', loc: 'oficina' },
-                { x: 0.5, y: 0.55, name: 'ADU', loc: 'aduana' },
-                { x: 0.1, y: 0.15, name: 'PUERTO', loc: 'puerto_anp' },
-                { x: 0.8, y: 0.2, name: 'TERM', loc: 'terminal_navios' }
-            ];
-
-            doors.forEach(d => {
-                ctx.fillStyle = '#8B4513';
-                const dx = canvas.width * d.x;
-                const dy = canvas.height * d.y;
-                ctx.fillRect(dx - 20, dy - 35, 40, 70);
-                ctx.strokeStyle = '#654321';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(dx - 20, dy - 35, 40, 70);
-                ctx.fillStyle = '#ffff00';
-                ctx.font = '10px Courier';
-                ctx.textAlign = 'center';
-                ctx.fillText(d.name, dx, dy);
-            });
-
-            // Personaje
-            drawCharacter(canvas.width * 0.5, canvas.height * 0.7);
-        }
-
-        function drawLocation(locName, npcName) {
-            const colors = {
-                'migraciones': '#5a5a5a',
-                'prefectura': '#4a4a6a',
-                'oficina': '#6a6a4a',
-                'aduana': '#3a3a5a',
-                'puerto_anp': '#4a7fa7',
-                'terminal_navios': '#6a4a3a'
-            };
-
-            ctx.fillStyle = colors[locName] || '#5a5a5a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#ffff00';
-            ctx.font = 'bold 16px Courier';
-            ctx.textAlign = 'center';
-            ctx.fillText(locName.toUpperCase(), canvas.width / 2, 40);
-
-            // Isometric effect (z-plane)
-            ctx.fillStyle = 'rgba(0,0,0,0.1)';
-            ctx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
-
-            drawCharacter(canvas.width * 0.25, canvas.height * 0.55);
-            drawNPC(canvas.width * 0.75, canvas.height * 0.55, npcName);
-        }
-
-        function drawCharacter(x, y) {
-            // Cabeza
-            ctx.fillStyle = '#ffdbac';
-            ctx.beginPath();
-            ctx.arc(x, y - 25, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Ojos
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(x - 4, y - 27, 2, 2);
-            ctx.fillRect(x + 2, y - 27, 2, 2);
-
-            // Cuerpo
-            ctx.fillStyle = '#1a3a7a';
-            ctx.fillRect(x - 8, y - 17, 16, 14);
-
-            // Brazos
-            ctx.fillRect(x - 10, y - 12, 4, 10);
-            ctx.fillRect(x + 6, y - 12, 4, 10);
-
-            // Piernas
-            ctx.fillRect(x - 4, y - 3, 3, 10);
-            ctx.fillRect(x + 1, y - 3, 3, 10);
-        }
-
-        function drawNPC(x, y, name) {
-            ctx.fillStyle = '#ffdbac';
-            ctx.beginPath();
-            ctx.arc(x, y - 25, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(x - 8, y - 17, 16, 14);
-
-            ctx.fillStyle = '#ffff00';
-            ctx.font = '9px Courier';
-            ctx.textAlign = 'center';
-            ctx.fillText(name, x, y + 20);
-        }
-
-        function gameLoop() {
-            if (gameState.location === 'intro') {
-                drawIntro();
-            } else if (gameState.location === 'mapa') {
-                drawMap();
-            } else if (gameState.location === 'migraciones') {
-                drawLocation('migraciones', 'GÓMEZ');
-            } else if (gameState.location === 'prefectura') {
-                drawLocation('prefectura', 'LÓPEZ');
-            } else if (gameState.location === 'oficina') {
-                drawLocation('oficina', 'MARTINA');
-            } else if (gameState.location === 'aduana') {
-                drawLocation('aduana', 'RODRÍGUEZ');
-            } else if (gameState.location === 'puerto_anp') {
-                drawLocation('puerto_anp', 'MARINERO');
-            } else if (gameState.location === 'terminal_navios') {
-                drawLocation('terminal_navios', 'SUPERVISOR');
-            }
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        // ============================================================
-        // EVENT HANDLERS
+        // INPUT
         // ============================================================
         canvas.addEventListener('click', (e) => {
-            initAudio();
-
+            audio.init();
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width * canvas.width;
             const y = (e.clientY - rect.top) / rect.height * canvas.height;
-
-            if (gameState.location === 'intro') {
-                gameState.introPhase++;
-                if (gameState.introPhase >= 3) {
-                    showDialog('monologue');
-                }
+            
+            if (gameState.location === 'menu' || gameState.location === 'intro') {
+                if (gameState.location === 'menu') goToLocation('intro');
+                else if (gameState.location === 'intro') goToLocation('intro');
             } else if (gameState.location === 'mapa') {
                 const doors = [
                     { x: canvas.width * 0.15, y: canvas.height * 0.35, loc: 'migraciones' },
                     { x: canvas.width * 0.4, y: canvas.height * 0.35, loc: 'prefectura' },
                     { x: canvas.width * 0.65, y: canvas.height * 0.35, loc: 'oficina' },
                     { x: canvas.width * 0.5, y: canvas.height * 0.55, loc: 'aduana' },
-                    { x: canvas.width * 0.1, y: canvas.height * 0.15, loc: 'puerto_anp' },
-                    { x: canvas.width * 0.8, y: canvas.height * 0.2, loc: 'terminal_navios' }
+                    { x: canvas.width * 0.1, y: canvas.height * 0.15, loc: 'puerto' },
+                    { x: canvas.width * 0.8, y: canvas.height * 0.2, loc: 'terminal' }
                 ];
-
                 doors.forEach(d => {
-                    if (Math.abs(x - d.x) < 40 && Math.abs(y - d.y) < 50) {
-                        goToLocation(d.loc);
-                    }
+                    if (Math.abs(x - d.x) < 50 && Math.abs(y - d.y) < 60) goToLocation(d.loc);
                 });
             }
         });
 
         window.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'r') {
-                location.reload();
-            }
+            if (e.key.toLowerCase() === 'r') location.reload();
+        });
+
+        document.getElementById('soundToggle').addEventListener('click', () => {
+            audio.enabled = !audio.enabled;
+            document.getElementById('soundToggle').textContent = audio.enabled ? '🔊 ON' : '🔇 OFF';
+            audio.init();
         });
 
         // ============================================================
-        // INITIALIZATION
+        // MAIN LOOP & INIT
         // ============================================================
+        function gameLoop(timestamp) {
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
         window.addEventListener('load', () => {
-            goToLocation('intro');
+            goToLocation('menu');
             gameLoop();
+            setInterval(() => {
+                const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                document.getElementById('timeStatus').textContent = String(Math.floor(elapsed / 60)).padStart(2, '0') + ':' + String(elapsed % 60).padStart(2, '0');
+            }, 1000);
         });
 
-        document.addEventListener('click', initAudio, { once: true });
+        document.addEventListener('click', audio.init.bind(audio), { once: true });
     </script>
 </body>
 </html>
