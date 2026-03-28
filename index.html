@@ -941,7 +941,7 @@
             if (gameState.currentLocation === 'intro') {
                 // Click en intro avanza la secuencia
                 gameState.introPhase++;
-                sounds.introMusic();
+                if (soundEnabled) sounds.introMusic();
                 
                 if (gameState.introPhase === 1) {
                     const textEl = document.getElementById('dialogText');
@@ -990,8 +990,6 @@
 
         // ==================== INICIO ====================
         window.addEventListener('load', () => {
-            initAudio();
-            sounds.introMusic();
             showDialog('intro');
             gameLoop();
         });
