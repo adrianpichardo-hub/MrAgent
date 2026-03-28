@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Despacho de Nueva Palmira - Monkey Island Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #1a1a1a;
+            border: 4px solid #4a4a4a;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+        }
+
+        .ui-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid #4a4a4a;
+            padding: 15px;
+            max-height: 35%;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+            z-index: 10;
+        }
+
+        .dialog-text {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            min-height: 40px;
+        }
+
+        .dialog-options {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .dialog-option {
+            background: #2a2a2a;
+            border: 1px solid #00ff00;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #00ff00;
+        }
+
+        .dialog-option:hover {
+            background: #00ff00;
+            color: #000;
+            text-shadow: none;
+        }
+
+        .dialog-option.active {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .inventory {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            padding: 10px;
+            max-width: 200px;
+            z-index: 5;
+            font-size: 11px;
+        }
+
+        .inventory-title {
+            color: #00ff00;
+            font-weight: bold;
+            border-bottom: 1px solid #00ff00;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .inventory-item {
+            padding: 3px 0;
+            color: #00ff00;
+        }
+
+        .inventory-item.obtained {
+            color: #00ff00;
+            text-shadow: 0 0 3px #00ff00;
+        }
+
+        .inventory-item.unobtained {
+            color: #444;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            padding: 10px;
+            max-width: 250px;
+            z-index: 5;
+            font-size: 11px;
+        }
+
+        .status-text {
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+            margin: 3px 0;
+        }
+
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffff00;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px #000, 0 0 10px #ff0000;
+            z-index: 20;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInOut 4s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .victory-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .victory-screen.show {
+            display: flex;
+        }
+
+        .victory-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffff00;
+            text-shadow: 0 0 20px #ff0000;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .victory-text {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .victory-stats {
+            margin-top: 30px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .controls-text {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        .sound-toggle {
+            position: absolute;
+            top: 10px;
+            right: 220px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            z-index: 5;
+        }
+
+        .sound-toggle:hover {
+            background: #00ff00;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <canvas id="gameCanvas"></canvas>
+            <div class="title" id="titleScreen">EL DESPACHO DE<br>NUEVA PALMIRA</div>
+            <div class="status-bar">
+                <div class="status-text">LOCACIÓN: <span id="locacionStatus">INTRO</span></div>
+                <div class="status-text">CRISTHIAN Q</div>
+                <div class="status-text">DESPACHADOR</div>
+            </div>
+            <div class="sound-toggle" id="soundToggle">🔊 SONIDO: ON</div>
+            <div class="inventory">
+                <div class="inventory-title">INVENTARIO</div>
+                <div class="inventory-item" id="inv-doc">
+                    ☐ Doc. Migraciones
+                </div>
+                <div class="inventory-item" id="inv-auth">
+                    ☐ Autorización PF
+                </div>
+                <div class="inventory-item" id="inv-despach">
+                    ☐ Despacho Impreso
+                </div>
+                <div class="inventory-item" id="inv-sello">
+                    ☐ Sello Aduana
+                </div>
+            </div>
+            <div class="ui-panel" id="uiPanel">
+                <div class="dialog-text" id="dialogText">Cargando...</div>
+                <div class="dialog-options" id="dialogOptions"></div>
+            </div>
+            <div class="victory-screen" id="victoryScreen">
+                <div class="victory-title">¡¡VICTORIA!!</div>
+                <div class="victory-text">El buque ha entrado a puerto con éxito</div>
+                <div class="victory-text">La lancha sale hacia el barco...</div>
+                <div class="victory-stats" id="victoryStats"></div>
+                <div class="victory-text" style="margin-top: 30px;">Presiona R para reiniciar</div>
+            </div>
+            <div class="controls-text">
+                CLICK para seleccionar | R para reiniciar
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== SONIDOS RETRO ATARI ====================
+        let audioContext;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+            if (!soundEnabled || !audioContext) return;
+
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.type = type;
+            osc.frequency.value = frequency;
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        // SONIDOS ESPECÍFICOS
+        const sounds = {
+            // Sonido de selección (beep corto)
+            select: () => {
+                playSound(800, 0.1, 'sine', 0.3);
+            },
+
+            // Sonido de obtener item (ding positivo)
+            getItem: () => {
+                playSound(523, 0.1, 'sine', 0.3);
+                setTimeout(() => playSound(659, 0.1, 'sine', 0.3), 100);
+                setTimeout(() => playSound(784, 0.15, 'sine', 0.4), 200);
+            },
+
+            // Sonido de cachetazo (PLAAACK)
+            slap: () => {
+                playSound(150, 0.05, 'square', 0.5);
+                playSound(100, 0.08, 'square', 0.4);
+                playSound(80, 0.1, 'square', 0.3);
+            },
+
+            // Sonido de error (bzzzzt)
+            error: () => {
+                playSound(200, 0.1, 'square', 0.3);
+                playSound(150, 0.1, 'square', 0.3);
+                playSound(100, 0.1, 'square', 0.3);
+            },
+
+            // Sonido de victoria (fanfarria)
+            victory: () => {
+                playSound(523, 0.15, 'sine', 0.3);  // C
+                setTimeout(() => playSound(659, 0.15, 'sine', 0.3), 150);  // E
+                setTimeout(() => playSound(784, 0.15, 'sine', 0.3), 300);  // G
+                setTimeout(() => playSound(1047, 0.3, 'sine', 0.4), 450);  // C alto
+            },
+
+            // Sonido de radio (estática)
+            radio: () => {
+                const now = audioContext.currentTime;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.5, audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                const gain = audioContext.createGain();
+                source.connect(gain);
+                gain.connect(audioContext.destination);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                source.start(now);
+                source.stop(now + 0.5);
+            },
+
+            // Sonido de puerta
+            door: () => {
+                playSound(400, 0.2, 'sine', 0.4);
+                playSound(350, 0.2, 'sine', 0.3);
+            },
+
+            // Sonido de mini-juego ganado
+            miniGameWin: () => {
+                playSound(523, 0.1, 'sine', 0.3);
+                setTimeout(() => playSound(659, 0.1, 'sine', 0.3), 100);
+                setTimeout(() => playSound(784, 0.1, 'sine', 0.3), 200);
+                setTimeout(() => playSound(1047, 0.2, 'sine', 0.4), 300);
+            },
+
+            // Sonido de click
+            click: () => {
+                playSound(1200, 0.08, 'sine', 0.2);
+            }
+        };
+
+        // Toggle de sonido
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('soundToggle');
+            if (toggle) {
+                toggle.addEventListener('click', () => {
+                    soundEnabled = !soundEnabled;
+                    toggle.textContent = soundEnabled ? '🔊 SONIDO: ON' : '🔇 SONIDO: OFF';
+                    if (soundEnabled) {
+                        initAudio();
+                    }
+                });
+            }
+        });
+
+        // ==================== CANVAS & CONTEXTO ====================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // ==================== ESTADO GLOBAL ====================
+        const gameState = {
+            currentLocation: 'intro',
+            currentDialog: null,
+            items: {
+                documento_migraciones: false,
+                autorizacion_prefectura: false,
+                despacho_impreso: false,
+                sello_aduana: false
+            },
+            npcState: {
+                oficial_gomez_visited: false,
+                capitan_lopez_visited: false,
+                empleada_martina_visited: false,
+                inspector_rodriguez_visited: false,
+                marinero_visited: false,
+                supervisor_visited: false
+            },
+            events: {
+                primer_cachetazo: false,
+                segundo_cachetazo: false,
+                victoria: false,
+                intro_shown: false
+            },
+            stats: {
+                cachetazos: 0,
+                dialogos: 0,
+                mini_juegos: 0,
+                tiempo_inicio: Date.now()
+            }
+        };
+
+        // ==================== SISTEMA DE DIÁLOGOS ====================
+        const dialogs = {
+            intro: {
+                text: "🔊 [ESTÁTICA DE RADIO]\n\nPRÁCTICO: Rada Nueva Palmira... tenemos llegada de buque carguero en aproximadamente 30 minutos. Puerto AÑP, operaciones de descarga mineral. Cambio.",
+                options: []
+            },
+            intro_monologue: {
+                text: "CRISTHIAN (monólogo): El Capitán confía en mí... Solo necesito que Migraciones firme, luego Prefectura, imprimir en Oficina, y finalmente Aduana.\n\n¿Qué tan difícil puede ser?\n\n...No debería haber dicho eso.",
+                options: [{ text: "> Comenzar aventura", next: 'mapa_inicio' }]
+            },
+            mapa_inicio: {
+                text: "Estoy en el muelle de Nueva Palmira. Veo 6 locaciones diferentes. ¿Dónde voy primero?\n\n(CLICK en las puertas para navegar)",
+                options: []
+            },
+            migraciones_inicio: {
+                text: "OFICIAL GÓMEZ (amable): ¡Bienvenido a Migraciones! ¿Qué necesitás hoy?\n\nCRISTHIAN: Necesito documentación para un buque que llega en Rada...",
+                options: [{ text: "> Pedir el documento de entrada", next: 'migraciones_doc' }]
+            },
+            migraciones_doc: {
+                text: "OFICIAL GÓMEZ: Aquí está el documento de entrada. Es el VIP pass del mundo burocrático. Sin esto, eres nadie en puerto.\n\n¡¡ESPERA!! Cierta compañera mía... si la ves sin esto, te dará una paliza que no olvidarás en años.",
+                options: [{ text: "> Gracias, me lo llevo", next: 'mapa_inicio' }],
+                onSelect: () => {
+                    gameState.items.documento_migraciones = true;
+                    gameState.npcState.oficial_gomez_visited = true;
+                    gameState.stats.dialogos++;
+                    sounds.getItem();
+                }
+            },
+            prefectura_sin_doc: {
+                text: "CRISTHIAN (entra a Prefectura): Hola, vengo a—\n\n[SONIDO DE PASOS RÁPIDOS]\n\n¡¡OFICIAL MALHUMORADA ENTRA FURIOSA!!",
+                options: []
+            },
+            prefectura_cachetazo: {
+                text: "OFICIAL MALHUMORADA (grandota): ¡¡¡EL DESPACHO NO ESTÁ FIRMADO POR MIGRACIONES!!!\n\n[PLAAACK!!!]\n\n❌ Cristhian recibe un CACHETAZO ÉPICO\n❌ Su cabeza rota 180°\n❌ Sus ojos se cruzan (X.X)\n❌ Pájaros orbitan su cabeza\n❌ Se cae de culo\n\n¡¡VOLVÉ CUANDO TENGAS TODO EN ORDEN!!",
+                options: [],
+                onShow: () => sounds.slap()
+            },
+            prefectura_con_doc: {
+                text: "CAPITÁN LÓPEZ (serio): Mmm, sí, sí... el documento de Migraciones está correcto. Pero... ¿podrías hacerme un pequeño favor?\n\nNecesito un cigarrillo. Los buenos, los que trae el contrabandista de Concordia...\n\nBueno, como te veo cara de competente... aquí está la autorización firmada.",
+                options: [{ text: "> Gracias, Capitán", next: 'mapa_inicio' }],
+                onSelect: () => {
+                    gameState.items.autorizacion_prefectura = true;
+                    gameState.npcState.capitan_lopez_visited = true;
+                    gameState.stats.dialogos++;
+                    sounds.getItem();
+                }
+            },
+            oficina_sin_auth: {
+                text: "CRISTHIAN (entra a Oficina sin autorización de Prefectura)...\n\n[ESPERA... LA OFICIAL MALHUMORADA APARECE DE NUEVO]",
+                options: []
+            },
+            oficina_sin_auth_cachetazo: {
+                text: "OFICIAL MALHUMORADA (aún más furiosa): ¡¡¡YA TE LO DIJE!!!\n\n[PLAAACK X2!!!]\n\n❌ Cachetazo DOBLE de extrema potencia\n❌ Cristhian ve ESTRELLAS y PÁJAROS\n❌ Sale volando hacia la puerta\n\n¡¡PRIMERO MIGRACIONES, LUEGO PREFECTURA, DESPUÉS ACÁAA!!",
+                options: [],
+                onShow: () => { sounds.slap(); setTimeout(() => sounds.slap(), 200); }
+            },
+            oficina_minijuego: {
+                text: "EMPLEADA MARTINA (comiendo empanadas): ¿Qué necesitás que imprima hoy?\n\nTengo algunas opciones... ¿cuál es?\n\nSELECCIONA LA OPCIÓN CORRECTA:",
+                options: [
+                    { text: "1. Despacho oficial", next: 'oficina_correcto', result: true },
+                    { text: "2. Carta de amor anónima", next: 'oficina_incorrecto', result: false },
+                    { text: "3. Receta de bizcochos", next: 'oficina_incorrecto', result: false },
+                    { text: "4. Manual Prefectura (en ruso)", next: 'oficina_incorrecto', result: false }
+                ]
+            },
+            oficina_correcto: {
+                text: "MARTINA: ¡¡EXCELENTE OPCIÓN!! Aquí está el despacho impreso. Perfecto, rellenito, listo para que Aduana lo selle.",
+                options: [{ text: "> Gracias, Martina", next: 'mapa_inicio' }],
+                onSelect: () => {
+                    gameState.items.despacho_impreso = true;
+                    gameState.npcState.empleada_martina_visited = true;
+                    gameState.stats.mini_juegos++;
+                    gameState.stats.dialogos++;
+                    sounds.miniGameWin();
+                }
+            },
+            oficina_incorrecto: {
+                text: "MARTINA (boca llena): ¿Estás LOCO? ¿Eso se imprime? Por favor... intenta de nuevo.",
+                options: [
+                    { text: "1. Despacho oficial", next: 'oficina_correcto', result: true },
+                    { text: "2. Carta de amor anónima", next: 'oficina_incorrecto', result: false },
+                    { text: "3. Receta de bizcochos", next: 'oficina_incorrecto', result: false },
+                    { text: "4. Manual Prefectura (en ruso)", next: 'oficina_incorrecto', result: false }
+                ],
+                onShow: () => sounds.error()
+            },
+            aduana_inicio: {
+                text: "INSPECTOR RODRÍGUEZ (paranoico): Espera, espera... ¿ESE despacho es AUTÉNTICO? Mmm, huele a... autoridad. Pero podría ser FALSO.\n\n¿Vos trabajás para los contrabandistas de Concordia? ¡¡RESPONDE!!",
+                options: [{ text: "> ¡¡NO!! Solo necesito que lo selles!", next: 'aduana_sello' }]
+            },
+            aduana_sello: {
+                text: "INSPECTOR RODRÍGUEZ: Eso es lo que diría un CONTRABANDISTA... pero bueno.\n\nAqui está el sello. Cuando el buque entre a puerto, dirán que fue gracias a MÍ. El sello... ES PODER.",
+                options: [{ text: "> Gracias, Inspector", next: 'victoria' }],
+                onSelect: () => {
+                    gameState.items.sello_aduana = true;
+                    gameState.npcState.inspector_rodriguez_visited = true;
+                    gameState.stats.dialogos++;
+                    gameState.events.victoria = true;
+                    sounds.victory();
+                }
+            },
+            puerto_anp: {
+                text: "MARINERO (fumando): ¿Qué mirás? ¿Nunca viste un buque grande? Este pesa 50 mil toneladas de mineral. Una BESTIA del río. Sin las maniobras correctas, se queda fondeado.",
+                options: [{ text: "> Interesante", next: 'mapa_inicio' }],
+                onSelect: () => {
+                    gameState.npcState.marinero_visited = true;
+                }
+            },
+            terminal_minijuego: {
+                text: "SUPERVISOR (oficial, austero): El buque que llega... ¿cuántas toneladas pesa?\n\nRECUERDA: Un despachador profesional debe saber esto.\n\nSELECCIONA:",
+                options: [
+                    { text: "1. 3.000 toneladas", next: 'terminal_incorrecto', result: false },
+                    { text: "2. 50.000 toneladas", next: 'terminal_correcto', result: true },
+                    { text: "3. 10 toneladas (velero de niños)", next: 'terminal_incorrecto', result: false }
+                ]
+            },
+            terminal_correcto: {
+                text: "SUPERVISOR (asiente): ¡Correcto! Aproximadamente 50 mil toneladas. Buen ojo para los números. Un verdadero despachador.",
+                options: [{ text: "> Gracias", next: 'mapa_inicio' }],
+                onSelect: () => {
+                    gameState.stats.mini_juegos++;
+                    gameState.npcState.supervisor_visited = true;
+                    sounds.miniGameWin();
+                }
+            },
+            terminal_incorrecto: {
+                text: "SUPERVISOR (decepcionado): ¡Incorrecto! Ese buque pesa MUCHO más. Te necesito más atento. Esto es Aduana, no un juego.",
+                options: [{ text: "> Entendido", next: 'mapa_inicio' }],
+                onSelect: () => {
+                    gameState.npcState.supervisor_visited = true;
+                    sounds.error();
+                }
+            },
+            victoria: {
+                text: "✅ ¡¡VICTORIA!! ✅\n\nEl SELLO DE ADUANA está completo. El buque ha sido despachado correctamente.\n\nLa lancha sale del muelle hacia el carguero. Cristhian va a bordo.",
+                options: []
+            }
+        };
+
+        // ==================== FUNCIONES DE JUEGO ====================
+        function updateInventoryUI() {
+            const items = [
+                { id: 'inv-doc', state: gameState.items.documento_migraciones, name: 'Doc. Migraciones' },
+                { id: 'inv-auth', state: gameState.items.autorizacion_prefectura, name: 'Autorización PF' },
+                { id: 'inv-despach', state: gameState.items.despacho_impreso, name: 'Despacho Impreso' },
+                { id: 'inv-sello', state: gameState.items.sello_aduana, name: 'Sello Aduana' }
+            ];
+
+            items.forEach(item => {
+                const el = document.getElementById(item.id);
+                el.className = item.state ? 'inventory-item obtained' : 'inventory-item unobtained';
+                el.textContent = item.state ? '☑ ' + item.name : '☐ ' + item.name;
+            });
+        }
+
+        function showDialog(dialogKey) {
+            const dialog = dialogs[dialogKey];
+            if (!dialog) return;
+
+            gameState.currentDialog = dialogKey;
+            const textEl = document.getElementById('dialogText');
+            const optionsEl = document.getElementById('dialogOptions');
+
+            textEl.textContent = dialog.text;
+            optionsEl.innerHTML = '';
+
+            if (dialog.onShow) {
+                dialog.onShow();
+            }
+
+            if (dialog.options && dialog.options.length > 0) {
+                dialog.options.forEach((option) => {
+                    const btn = document.createElement('div');
+                    btn.className = 'dialog-option';
+                    btn.textContent = option.text;
+                    btn.onclick = () => {
+                        sounds.select();
+                        selectOption(option);
+                    };
+                    optionsEl.appendChild(btn);
+                });
+            } else {
+                setTimeout(() => {
+                    if (dialogKey === 'intro') {
+                        sounds.radio();
+                        setTimeout(() => showDialog('intro_monologue'), 500);
+                    } else if (dialogKey === 'intro_monologue') {
+                        gameState.events.intro_shown = true;
+                        goToLocation('mapa');
+                    } else if (dialogKey === 'prefectura_sin_doc') {
+                        showDialog('prefectura_cachetazo');
+                    } else if (dialogKey === 'prefectura_cachetazo') {
+                        setTimeout(() => goToLocation('mapa'), 2000);
+                    } else if (dialogKey === 'oficina_sin_auth') {
+                        showDialog('oficina_sin_auth_cachetazo');
+                    } else if (dialogKey === 'oficina_sin_auth_cachetazo') {
+                        setTimeout(() => goToLocation('mapa'), 2000);
+                    }
+                }, 3000);
+            }
+
+            updateInventoryUI();
+        }
+
+        function selectOption(option) {
+            if (option.onSelect) {
+                option.onSelect();
+            }
+
+            if (option.next) {
+                showDialog(option.next);
+            }
+        }
+
+        function goToLocation(location) {
+            gameState.currentLocation = location;
+            document.getElementById('locacionStatus').textContent = location.toUpperCase();
+            sounds.door();
+
+            if (location === 'mapa') {
+                showDialog('mapa_inicio');
+            } else if (location === 'migraciones') {
+                if (!gameState.npcState.oficial_gomez_visited) {
+                    showDialog('migraciones_inicio');
+                } else {
+                    showDialog('mapa_inicio');
+                }
+            } else if (location === 'prefectura') {
+                if (!gameState.items.documento_migraciones) {
+                    gameState.stats.cachetazos++;
+                    showDialog('prefectura_sin_doc');
+                } else if (!gameState.npcState.capitan_lopez_visited) {
+                    showDialog('prefectura_con_doc');
+                } else {
+                    showDialog('mapa_inicio');
+                }
+            } else if (location === 'oficina') {
+                if (!gameState.items.autorizacion_prefectura) {
+                    gameState.stats.cachetazos++;
+                    showDialog('oficina_sin_auth');
+                } else if (!gameState.npcState.empleada_martina_visited) {
+                    showDialog('oficina_minijuego');
+                } else {
+                    showDialog('mapa_inicio');
+                }
+            } else if (location === 'aduana') {
+                if (!gameState.items.despacho_impreso) {
+                    showDialog('mapa_inicio');
+                } else if (!gameState.npcState.inspector_rodriguez_visited) {
+                    showDialog('aduana_inicio');
+                } else {
+                    showDialog('mapa_inicio');
+                }
+            } else if (location === 'puerto_anp') {
+                showDialog('puerto_anp');
+            } else if (location === 'terminal_navios') {
+                showDialog('terminal_minijuego');
+            }
+        }
+
+        function showVictory() {
+            const victoryScreen = document.getElementById('victoryScreen');
+            const statsEl = document.getElementById('victoryStats');
+            const timeDiff = Math.floor((Date.now() - gameState.stats.tiempo_inicio) / 1000);
+            const minutes = Math.floor(timeDiff / 60);
+            const seconds = timeDiff % 60;
+
+            statsEl.innerHTML = `
+                <div class="status-text">Cachetazos recibidos: ${gameState.stats.cachetazos}</div>
+                <div class="status-text">Diálogos completados: ${gameState.stats.dialogos}</div>
+                <div class="status-text">Mini-juegos ganados: ${gameState.stats.mini_juegos}</div>
+                <div class="status-text">Tiempo jugado: ${minutes}m ${seconds}s</div>
+            `;
+
+            victoryScreen.classList.add('show');
+        }
+
+        // ==================== CANVAS RENDERING ====================
+        function drawBackground() {
+            ctx.fillStyle = '#2a3a4a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const location = gameState.currentLocation;
+
+            if (location === 'intro') {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff00';
+                ctx.font = 'bold 24px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText('🔊 ESTÁTICA DE RADIO', canvas.width / 2, canvas.height / 2 - 40);
+                ctx.fillText('Práctico informando...', canvas.width / 2, canvas.height / 2);
+            } else if (location === 'mapa') {
+                ctx.fillStyle = '#8B7355';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#4a7fa7';
+                ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+                
+                ctx.fillStyle = '#cccccc';
+                ctx.fillRect(canvas.width * 0.8, 20, 40, 100);
+                ctx.fillStyle = '#aaaaaa';
+                ctx.fillRect(canvas.width * 0.85, 40, 8, 80);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(canvas.width * 0.1, 20, 4, 60);
+                ctx.fillStyle = '#0066cc';
+                ctx.fillRect(canvas.width * 0.14, 20, 20, 20);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(canvas.width * 0.14, 40, 20, 10);
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(canvas.width * 0.14, 50, 20, 10);
+
+                const doors = [
+                    { x: canvas.width * 0.15, y: canvas.height * 0.3, name: 'MIGRACIONES', loc: 'migraciones' },
+                    { x: canvas.width * 0.4, y: canvas.height * 0.3, name: 'PREFECTURA', loc: 'prefectura' },
+                    { x: canvas.width * 0.65, y: canvas.height * 0.3, name: 'OFICINA', loc: 'oficina' },
+                    { x: canvas.width * 0.5, y: canvas.height * 0.5, name: 'ADUANA', loc: 'aduana' },
+                    { x: canvas.width * 0.1, y: canvas.height * 0.1, name: 'PUERTO AÑP', loc: 'puerto_anp' },
+                    { x: canvas.width * 0.75, y: canvas.height * 0.15, name: 'TERMINAL', loc: 'terminal_navios' }
+                ];
+
+                doors.forEach(door => {
+                    ctx.fillStyle = '#8B4513';
+                    ctx.fillRect(door.x - 25, door.y - 40, 50, 80);
+                    ctx.strokeStyle = '#654321';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(door.x - 25, door.y - 40, 50, 80);
+                    ctx.fillStyle = '#ffff00';
+                    ctx.font = 'bold 10px Courier New';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(door.name, door.x, door.y);
+                    door.clickArea = { x: door.x, y: door.y };
+                });
+
+                drawChristhian(canvas.width / 2, canvas.height * 0.7);
+            } else {
+                const bgColors = {
+                    'migraciones': '#5a5a5a',
+                    'prefectura': '#4a4a6a',
+                    'oficina': '#6a6a4a',
+                    'aduana': '#3a3a5a',
+                    'puerto_anp': '#4a7fa7',
+                    'terminal_navios': '#6a4a3a'
+                };
+
+                const titles = {
+                    'migraciones': 'MIGRACIONES',
+                    'prefectura': 'PREFECTURA',
+                    'oficina': 'OFICINA',
+                    'aduana': 'ADUANA',
+                    'puerto_anp': 'PUERTO AÑP',
+                    'terminal_navios': 'TERMINAL NAVIOS'
+                };
+
+                ctx.fillStyle = bgColors[location] || '#5a5a5a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffff00';
+                ctx.font = 'bold 20px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText(titles[location], canvas.width / 2, 50);
+                
+                drawChristhian(canvas.width * 0.3, canvas.height * 0.5);
+                drawNPC(canvas.width * 0.7, canvas.height * 0.5, location);
+            }
+        }
+
+        function drawChristhian(x, y) {
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(x - 6, y - 35, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + 6, y - 35, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffdbac';
+            ctx.fillRect(x - 8, y - 28, 16, 14);
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x - 5, y - 23, 3, 3);
+            ctx.fillRect(x + 2, y - 23, 3, 3);
+
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(x, y - 17, 4, 0, Math.PI);
+            ctx.stroke();
+
+            ctx.fillStyle = '#1a3a7a';
+            ctx.fillRect(x - 10, y - 14, 20, 16);
+
+            ctx.fillStyle = '#ff8c00';
+            ctx.fillRect(x - 11, y - 12, 4, 14);
+            ctx.fillRect(x + 7, y - 12, 4, 14);
+
+            ctx.fillStyle = '#1a3a7a';
+            ctx.fillRect(x - 6, y + 2, 4, 12);
+            ctx.fillRect(x + 2, y + 2, 4, 12);
+
+            ctx.fillStyle = '#2a2a2a';
+            ctx.fillRect(x - 6, y + 14, 5, 3);
+            ctx.fillRect(x + 2, y + 14, 5, 3);
+        }
+
+        function drawNPC(x, y, location) {
+            ctx.fillStyle = '#ffdbac';
+            ctx.beginPath();
+            ctx.arc(x, y - 25, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(x, y - 28, 9, 0, Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x - 4, y - 27, 2, 2);
+            ctx.fillRect(x + 2, y - 27, 2, 2);
+
+            ctx.fillStyle = '#4a7fa7';
+            ctx.fillRect(x - 10, y - 15, 20, 18);
+
+            const names = {
+                'migraciones': 'GÓMEZ',
+                'prefectura': 'LÓPEZ',
+                'oficina': 'MARTINA',
+                'aduana': 'RODRÍGUEZ',
+                'puerto_anp': 'MARINERO',
+                'terminal_navios': 'SUPERVISOR'
+            };
+
+            ctx.fillStyle = '#ffff00';
+            ctx.font = 'bold 10px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText(names[location], x, y + 25);
+        }
+
+        // ==================== MANEJO DE CLICKS ====================
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width * canvas.width;
+            const y = (e.clientY - rect.top) / rect.height * canvas.height;
+
+            if (gameState.currentLocation === 'mapa') {
+                const doors = [
+                    { x: canvas.width * 0.15, y: canvas.height * 0.3, location: 'migraciones' },
+                    { x: canvas.width * 0.4, y: canvas.height * 0.3, location: 'prefectura' },
+                    { x: canvas.width * 0.65, y: canvas.height * 0.3, location: 'oficina' },
+                    { x: canvas.width * 0.5, y: canvas.height * 0.5, location: 'aduana' },
+                    { x: canvas.width * 0.1, y: canvas.height * 0.1, location: 'puerto_anp' },
+                    { x: canvas.width * 0.75, y: canvas.height * 0.15, location: 'terminal_navios' }
+                ];
+
+                doors.forEach(door => {
+                    if (x > door.x - 30 && x < door.x + 30 && y > door.y - 50 && y < door.y + 50) {
+                        goToLocation(door.location);
+                    }
+                });
+            }
+        });
+
+        // ==================== TECLAS ====================
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'r') {
+                location.reload();
+            }
+        });
+
+        // ==================== GAME LOOP ====================
+        function gameLoop() {
+            drawBackground();
+
+            if (gameState.events.victoria) {
+                showVictory();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ==================== INICIO ====================
+        window.addEventListener('load', () => {
+            initAudio();
+            showDialog('intro');
+            gameLoop();
+        });
+    </script>
+</body>
+</html>
