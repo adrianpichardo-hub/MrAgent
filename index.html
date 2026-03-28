@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Despacho de Nueva Palmira - Monkey Island Style</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🎮</text></svg>">
     <style>
         * {
             margin: 0;
@@ -245,7 +246,7 @@
                 <div class="victory-stats" id="victoryStats"></div>
                 <div class="victory-text" style="margin-top: 30px;">Presiona R para reiniciar</div>
             </div>
-            <div class="controls-text">CLICK para seleccionar | R para reiniciar</div>
+            <div class="controls-text">CLICK para continuar | R para reiniciar</div>
         </div>
     </div>
 
@@ -326,7 +327,17 @@
                 setTimeout(() => playSound(784, 0.1, 'sine', 0.3), 200);
                 setTimeout(() => playSound(1047, 0.2, 'sine', 0.4), 300);
             },
-            click: () => playSound(1200, 0.08, 'sine', 0.2)
+            click: () => playSound(1200, 0.08, 'sine', 0.2),
+            // Música tenebrosa intro
+            introMusic: () => {
+                // Secuencia musical de intro tipo tenebrosa
+                playSound(165, 0.5, 'sine', 0.2);  // Nota baja
+                setTimeout(() => playSound(196, 0.5, 'sine', 0.2), 550);
+                setTimeout(() => playSound(165, 0.5, 'sine', 0.2), 1100);
+                setTimeout(() => playSound(147, 0.5, 'sine', 0.2), 1650);
+                setTimeout(() => playSound(165, 0.5, 'sine', 0.2), 2200);
+                setTimeout(() => playSound(196, 0.5, 'sine', 0.2), 2750);
+            }
         };
 
         document.getElementById('soundToggle').addEventListener('click', () => {
@@ -351,6 +362,7 @@
         const gameState = {
             currentLocation: 'intro',
             currentDialog: null,
+            introPhase: 0,
             items: {
                 documento_migraciones: false,
                 autorizacion_prefectura: false,
@@ -382,7 +394,7 @@
         // ==================== SISTEMA DE DIÁLOGOS ====================
         const dialogs = {
             intro: {
-                text: "🔊 [ESTÁTICA DE RADIO]\n\nPRÁCTICO: Rada Nueva Palmira... tenemos llegada de buque carguero en aproximadamente 30 minutos. Puerto AÑP, operaciones de descarga mineral. Cambio.",
+                text: "[ESPERANDO CLICK PARA CONTINUAR]",
                 options: []
             },
             intro_monologue: {
@@ -558,11 +570,14 @@
                     };
                     optionsEl.appendChild(btn);
                 });
+            } else if (dialogKey === 'intro') {
+                // Esperar click en la intro
+                setTimeout(() => {
+                    textEl.textContent = '[HACES CLICK PARA CONTINUAR...]';
+                }, 500);
             } else {
                 setTimeout(() => {
-                    if (dialogKey === 'intro') {
-                        setTimeout(() => showDialog('intro_monologue'), 500);
-                    } else if (dialogKey === 'intro_monologue') {
+                    if (dialogKey === 'intro_monologue') {
                         gameState.events.intro_shown = true;
                         goToLocation('mapa');
                     } else if (dialogKey === 'prefectura_sin_doc') {
@@ -653,6 +668,127 @@
             victoryScreen.classList.add('show');
         }
 
+        // ==================== INTRO CINEMATOGRÁFICA ====================
+        function drawIntroScreen() {
+            // Puente de mando del buque
+            ctx.fillStyle = '#1a3a5a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ventanas del puente (portillas)
+            ctx.fillStyle = '#87ceeb';
+            ctx.fillRect(canvas.width * 0.1, 20, 80, 60);
+            ctx.fillRect(canvas.width * 0.3, 20, 80, 60);
+            ctx.fillRect(canvas.width * 0.5, 20, 80, 60);
+            ctx.fillRect(canvas.width * 0.7, 20, 80, 60);
+
+            // Panel de control
+            ctx.fillStyle = '#4a4a4a';
+            ctx.fillRect(canvas.width * 0.1, canvas.height * 0.35, canvas.width * 0.8, canvas.height * 0.4);
+
+            // Botones/luces del panel
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.15, canvas.height * 0.5, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#00ff00';
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.25, canvas.height * 0.5, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.35, canvas.height * 0.5, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // PRÁCTICO (personaje)
+            drawPractico(canvas.width * 0.5, canvas.height * 0.6, gameState.introPhase);
+
+            // Micrófono/radio
+            ctx.fillStyle = '#cccccc';
+            ctx.fillRect(canvas.width * 0.75, canvas.height * 0.45, 30, 100);
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.9, canvas.height * 0.5, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // TEXTO
+            ctx.fillStyle = '#00ff00';
+            ctx.font = 'bold 16px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText('PUENTE DE MANDO - BUQUE CARGUERO', canvas.width / 2, canvas.height - 40);
+
+            ctx.font = '14px Courier New';
+            ctx.fillStyle = '#ffff00';
+            ctx.fillText('🔊 PRÁCTICO CHIARELLI', canvas.width / 2, canvas.height - 10);
+        }
+
+        function drawPractico(x, y, phase) {
+            // Cabeza
+            ctx.fillStyle = '#ffdbac';
+            ctx.beginPath();
+            ctx.arc(x, y - 30, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pelo/gorro
+            ctx.fillStyle = '#333333';
+            ctx.beginPath();
+            ctx.arc(x, y - 40, 16, 0, Math.PI);
+            ctx.fill();
+
+            // Ojos
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x - 8, y - 30, 3, 3);
+            ctx.fillRect(x + 5, y - 30, 3, 3);
+
+            // BOCA ANIMADA (abre y cierra según phase)
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            if (phase % 2 === 0) {
+                // Boca cerrada
+                ctx.moveTo(x - 6, y - 18);
+                ctx.lineTo(x + 6, y - 18);
+            } else {
+                // Boca abierta
+                ctx.arc(x, y - 18, 6, 0, Math.PI);
+            }
+            ctx.stroke();
+
+            // Cuerpo (uniforme)
+            ctx.fillStyle = '#1a1a5a';
+            ctx.fillRect(x - 18, y - 15, 36, 40);
+
+            // Botones
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(x, y - 5, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x, y + 5, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Brazos
+            ctx.strokeStyle = '#ffdbac';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x - 18, y - 5);
+            ctx.lineTo(x - 35, y + 10);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x + 18, y - 5);
+            ctx.lineTo(x + 35, y + 10);
+            ctx.stroke();
+
+            // Micrófono en la mano
+            ctx.fillStyle = '#cccccc';
+            ctx.fillRect(x - 37, y + 8, 8, 20);
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(x - 33, y + 5, 6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
         // ==================== CANVAS RENDERING ====================
         function drawBackground() {
             ctx.fillStyle = '#2a3a4a';
@@ -661,13 +797,7 @@
             const location = gameState.currentLocation;
 
             if (location === 'intro') {
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#00ff00';
-                ctx.font = 'bold 24px Courier New';
-                ctx.textAlign = 'center';
-                ctx.fillText('🔊 ESTÁTICA DE RADIO', canvas.width / 2, canvas.height / 2 - 40);
-                ctx.fillText('Práctico informando...', canvas.width / 2, canvas.height / 2);
+                drawIntroScreen();
             } else if (location === 'mapa') {
                 ctx.fillStyle = '#8B7355';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -808,7 +938,21 @@
             const x = (e.clientX - rect.left) / rect.width * canvas.width;
             const y = (e.clientY - rect.top) / rect.height * canvas.height;
 
-            if (gameState.currentLocation === 'mapa') {
+            if (gameState.currentLocation === 'intro') {
+                // Click en intro avanza la secuencia
+                gameState.introPhase++;
+                sounds.introMusic();
+                
+                if (gameState.introPhase === 1) {
+                    const textEl = document.getElementById('dialogText');
+                    textEl.textContent = "🔊 PRÁCTICO: Atencion Control Palmira, aqui Práctico Chiarelli...\n\nEn 5 minutos fondeamos en Rada Nueva Palmira, posición 3.\n\n[Pausa de tensión...]";
+                } else if (gameState.introPhase === 2) {
+                    const textEl = document.getElementById('dialogText');
+                    textEl.textContent = "🔊 PRÁCTICO: Autorización para operaciones de descarga mineral...\n\n[Estática de radio]";
+                } else if (gameState.introPhase >= 3) {
+                    showDialog('intro_monologue');
+                }
+            } else if (gameState.currentLocation === 'mapa') {
                 const doors = [
                     { x: canvas.width * 0.15, y: canvas.height * 0.3, location: 'migraciones' },
                     { x: canvas.width * 0.4, y: canvas.height * 0.3, location: 'prefectura' },
@@ -846,6 +990,8 @@
 
         // ==================== INICIO ====================
         window.addEventListener('load', () => {
+            initAudio();
+            sounds.introMusic();
             showDialog('intro');
             gameLoop();
         });
